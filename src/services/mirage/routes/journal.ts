@@ -10,9 +10,7 @@ export const create = (
   req: Request
 ): { user: User; journal: Journal } | Response => {
   try {
-    const { title, userId } = JSON.parse(req.requestBody) as Partial<
-      Journal
-    >;
+    const { title, userId } = JSON.parse(req.requestBody) as Partial<Journal>;
     const exUser = schema.users.findBy({ id: userId });
     if (!exUser) {
       return handleErrors(null, 'No such user exists.');
@@ -62,7 +60,10 @@ export const addEntry = (
   }
 };
 
-export const getJournals = (schema: any, req: Request): Journal[] | Response => {
+export const getJournals = (
+  schema: any,
+  req: Request
+): Journal[] | Response => {
   try {
     const user = schema.users.find(req.params.id);
     return user.journal as Journal[];
@@ -71,19 +72,55 @@ export const getJournals = (schema: any, req: Request): Journal[] | Response => 
   }
 };
 
+export const getJournalDataByJournalId = (
+  schema: any,
+  req: Request
+): Journal | Response => {
+  try {
+    const journal = schema.journals.find(req.params.id);
+    return journal;
+  } catch (error) {
+    return handleErrors(error, 'Journal not found.');
+  }
+};
+
 export const getEntries = (
   schema: any,
   req: Request
-): { entries: Entry[] } | Response => {
+): { entries: Entry[]; journalTitle: string } | Response => {
   try {
     const journal = schema.journals.find(req.params.id);
-    return journal.entry;
+    return { entries: journal.entry.models, journalTitle: journal.attrs.title };
   } catch (error) {
     return handleErrors(error, 'Failed to get Journal entries.');
   }
 };
 
-export const updateJournal = (schema: any, req: Request): Journal | Response => {
+export const getEntrieById = (
+  schema: any,
+  req: Request
+): { entrie: Entry | null } | Response => {
+  try {
+    const journal = schema.journals.find(req.params.journalId);
+
+    if (journal) {
+      return {
+        entrie: journal.entry.models.find(
+          (item: Entry) => item.id === req.params.postId
+        ),
+      };
+    }
+
+    return { entrie: null };
+  } catch (error) {
+    return handleErrors(error, 'Failed to get entrie.');
+  }
+};
+
+export const updateJournal = (
+  schema: any,
+  req: Request
+): Journal | Response => {
   try {
     const journal = schema.journals.find(req.params.id);
     const data = JSON.parse(req.requestBody) as Partial<Journal>;
