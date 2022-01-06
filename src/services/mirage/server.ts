@@ -42,7 +42,7 @@ export const setupServer = (env?: string): Server => {
     },
 
     routes(): void {
-      this.urlPrefix = 'https://fuerza.test';
+      this.urlPrefix = '/api';
 
       this.get('/journals/entries/:id', journal.getEntries);
       this.get('/journals/:id', journal.getJournals);

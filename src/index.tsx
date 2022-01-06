@@ -5,9 +5,7 @@ import AppProviders from './context';
 import { BrowserRouter } from 'react-router-dom';
 import { setupServer } from './services/mirage/server';
 
-if (process.env.NODE_ENV === 'development') {
-  setupServer();
-}
+setupServer(process.env.NODE_ENV);
 
 ReactDOM.render(
   <React.StrictMode>
